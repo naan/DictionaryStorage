@@ -16,6 +16,4 @@ jobs:
     steps:
       - uses: swift-actions/setup-swift@v2.0.0
       - name: Setup Swift
-        run: swift --version # Swift 5.10
-      - name: Run tests
         run: swift test -v
