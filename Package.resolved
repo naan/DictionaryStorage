@@ -1,4 +1,5 @@
 {
+  "originHash" : "631a888cc5d5f509d84e32e621e8e37e34b16fa3922fcb64da25ac2776b5a015",
   "pins" : [
     {
       "identity" : "swift-macro-testing",
@@ -28,5 +29,5 @@
       }
     }
   ],
-  "version" : 2
+  "version" : 3
 }
