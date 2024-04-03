@@ -1,3 +1,4 @@
+[![Build](https://github.com/naan/DictionaryStorage/actions/workflows/swift.yml/badge.svg)](https://github.com/naan/DictionaryStorage/actions/workflows/swift.yml)
 # @DictionaryStorage
 
 A Swift Macro expands the stored properties of a type into computed properties that access to a storage dictionary. Inspired by WWDC 2023 Video [Expand on Swift macros](https://developer.apple.com/videos/play/wwdc2023/10167?time=748), [the sample code](https://github.com/apple/swift-syntax/blob/main/Examples/Sources/MacroExamples/Implementation/ComplexMacros/DictionaryIndirectionMacro.swift) of [swift-syntax](https://github.com/apple/swift-syntax) and Nikita Ermolenk's [Automating RawRepresentable Conformance with Swift Macros](https://otbivnoe.ru/2023/06/13/Automating-RawRepresentable-Conformance-with-Swift-Macros.html).
