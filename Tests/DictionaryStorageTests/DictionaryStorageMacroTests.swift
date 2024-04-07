@@ -17,6 +17,13 @@ typealias UserId = UUID
 
 @DictionaryStorage(.hashable)
 struct Test {
+
+    enum `Type`: String, Codable {
+        case text, email
+    }
+
+    var `type`: `Type` = .text
+    var `var`: Int = 0
     var loc: Location = Location()
     var location: Location?
     var history: [Location] = []
@@ -38,6 +45,8 @@ final class DictionaryMacroTests: XCTestCase {
         let data =
             """
             {
+                "type" : "email",
+                "var" : 100,
                 "location" : { "latitude" : 10.5, "longitude": 12.3 },
                 "history" : [
                     { "latitude" : 50, "longitude": 60 },
@@ -53,6 +62,8 @@ final class DictionaryMacroTests: XCTestCase {
         let json = try JSONSerialization.jsonObject(with: data) as? [String: Any]
         XCTAssert(json != nil)
         let test = Test(json!)
+        XCTAssert(test.type == .email)
+        XCTAssert(test.var == 100)
         XCTAssert(test.loc == Location())
         XCTAssert(test.location == Location(latitude: 10.5, longitude: 12.3))
         XCTAssertEqual(test.history.count, 2)
@@ -72,5 +83,10 @@ final class DictionaryMacroTests: XCTestCase {
         XCTAssertEqual(test, test2)
         test2.username = "kaz@example.com"
         XCTAssertNotEqual(test, test2)
+
+        test2.type = .text
+        test2.var = 200
+        XCTAssertEqual(test2.rawDictionary["type"] as? String, "text")
+        XCTAssertEqual(test2.rawDictionary["var"] as? Int, 200)
     }
 }

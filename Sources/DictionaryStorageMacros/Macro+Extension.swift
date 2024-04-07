@@ -181,3 +181,9 @@ extension TypeSyntax {
     }
 
 }
+
+extension TokenSyntax {
+    var identifierName: String {
+        self.text.replacingOccurrences(of: "`", with: "")
+    }
+}

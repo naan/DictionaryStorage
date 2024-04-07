@@ -641,5 +641,71 @@ final class DictionaryStorageMacroTests: XCTestCase {
             """
         }
     }
+
+    func testBackTick() {
+        assertMacro {
+            """
+            @DictionaryStorage
+            public struct Data {
+
+              public enum `Type`: String {
+                case text
+                case email
+              }
+
+              public var `type`: `Type` = .text
+              public var `var`: Int = 0
+            }
+            """
+        } diagnostics: {
+            """
+
+            """
+        }expansion: {
+            """
+            public struct Data {
+
+              public enum `Type`: String {
+                case text
+                case email
+              }
+
+              public var `type`: `Type` = .text {
+                get {
+                  guard let value = _storage["type"] else {
+                    return .text
+                  }
+                  return DictionaryStorage.decode(`Type`.self, value: value) ?? .text
+                }
+                set {
+                  _storage["type"] = DictionaryStorage.encode(newValue)
+                }
+              }
+              public var `var`: Int = 0 {
+                get {
+                  _storage["var", default: 0] as! Int
+                }
+                set {
+                  _storage["var"] = newValue
+                }
+              }
+
+              public init(_ dictionary: [String: Any]) {
+                self._storage = dictionary
+              }
+
+              private var _storage: [String: Any] = [:]
+
+              public var rawDictionary: [String: Any] {
+                _storage
+              }
+            }
+
+            extension Data: DictionaryRepresentable {
+            }
+            """
+        }
+
+    }
 }
 // swiftlint:enable function_body_length type_body_length

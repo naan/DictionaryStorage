@@ -242,7 +242,7 @@ public struct DictionaryStoragePropertyMacro: AccessorMacro {
             return [
                 """
                 get {
-                  guard let values = _storage[\(literal: key.text)] as? [Any] else {
+                  guard let values = _storage[\(literal: key.identifierName)] as? [Any] else {
                     return \(returnValue)
                   }
                   return values.compactMap { DictionaryStorage.decode(\(type.rawType.trimmed).self, value: $0) }
@@ -254,7 +254,7 @@ public struct DictionaryStoragePropertyMacro: AccessorMacro {
             return [
                 """
                 get {
-                  guard let value = _storage[\(literal: key.text)] else {
+                  guard let value = _storage[\(literal: key.identifierName)] else {
                     return \(returnValue)
                   }
                   return DictionaryStorage.decode(\(type.rawType.trimmed).self, value: value) ?? \(returnValue)
@@ -301,9 +301,9 @@ public struct DictionaryStoragePropertyMacro: AccessorMacro {
 
     private static func storage(for key: TokenSyntax, default defaultValue: ExprSyntax? = nil) -> TokenSyntax {
         if let defaultValue {
-            "_storage[\(literal: key.text), default: \(defaultValue)]"
+            "_storage[\(literal: key.identifierName), default: \(defaultValue)]"
         } else {
-            "_storage[\(literal: key.text)]"
+            "_storage[\(literal: key.identifierName)]"
         }
     }
 }
