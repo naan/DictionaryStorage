@@ -216,6 +216,46 @@ final class StringRepresentationMacroTests: XCTestCase {
             indentationWidth: .spaces(2)
         )
     }
+    
+    func testDefault() {
+        assertMacroExpansion(
+            """
+            @StringRawRepresentation
+            public enum Visa {
+              case hello
+            }
+            """,
+            expandedSource: """
+                public enum Visa {
+                  case hello
+                
+                  public var rawValue: String {
+                    switch self {
+                    case .hello:
+                      return "hello"
+                    }
+                  }
+                
+                  public init?(rawValue: String) {
+                    switch rawValue {
+                    case "hello":
+                      self = .hello
+                    default:
+                      return nil
+                    }
+                  }
+                }
+                
+                extension Visa: RawRepresentable {
+                }
+                
+                extension Visa: Equatable {
+                }
+                """,
+            macros: macros,
+            indentationWidth: .spaces(2)
+        )
+    }
 
     func testMultipleElements() {
         assertMacroExpansion(
