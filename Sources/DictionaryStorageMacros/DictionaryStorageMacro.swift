@@ -282,12 +282,12 @@ public struct DictionaryStoragePropertyMacro: AccessorMacro {
 
     private static func primitiveGetter(key: TokenSyntax, defaultValue: ExprSyntax?, type: TypeSyntax) -> AccessorDeclSyntax {
 
-        let castType = type.removeOptional
+        let castType = type.removeOptional.trimmed
 
         if let defaultValue {
             return """
                 get {
-                  \(storage(for: key, default: defaultValue)) as! \(castType)
+                  \(storage(for: key, default: defaultValue)) as? \(castType) ?? \(defaultValue)
                 }
                 """
         } else {

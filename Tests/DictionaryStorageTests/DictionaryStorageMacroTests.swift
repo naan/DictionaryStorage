@@ -37,6 +37,10 @@ struct Test {
     var userId: UserId? {
         return _userId
     }
+
+    // check wrong type
+    var intValue: Int = 100
+    var stringValue: String = "string"
 }
 
 final class DictionaryMacroTests: XCTestCase {
@@ -56,7 +60,9 @@ final class DictionaryMacroTests: XCTestCase {
                 "username" : "kaz@naan.net",
                 "data" : "QUJDREVGR0hJSktMTU4=",
                 "credId" : "73FA4758-5D5E-42DC-A368-02AF72D69467",
-                "userId" : "8F416357-853F-40BA-A6A9-5537B5A72225"
+                "userId" : "8F416357-853F-40BA-A6A9-5537B5A72225",
+                "intValue": "string",
+                "stringValue": 100
             }
             """.data(using: .utf8)!
         let json = try JSONSerialization.jsonObject(with: data) as? [String: Any]
@@ -78,6 +84,9 @@ final class DictionaryMacroTests: XCTestCase {
         XCTAssert(test.createdAt == nil)
         XCTAssert(test.credId == UUID(uuidString: "73FA4758-5D5E-42DC-A368-02AF72D69467"))
         XCTAssert(test.userId == UUID(uuidString: "8F416357-853F-40BA-A6A9-5537B5A72225"))
+
+        XCTAssertEqual(test.intValue, 100)
+        XCTAssertEqual(test.stringValue, "string")
 
         var test2 = Test(json!)
         XCTAssertEqual(test, test2)

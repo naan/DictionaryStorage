@@ -52,7 +52,7 @@ final class DictionaryStorageMacroTests: XCTestCase {
               private var myId: User.Id?
               var x: Int = 1 {
                 get {
-                  _storage["x", default: 1] as! Int
+                  _storage["x", default: 1] as? Int ?? 1
                 }
                 set {
                   _storage["x"] = newValue
@@ -115,7 +115,7 @@ final class DictionaryStorageMacroTests: XCTestCase {
             struct Test {
               var y: Int = 2 {
                 get {
-                  _storage["myValue", default: 2] as! Int
+                  _storage["myValue", default: 2] as? Int ?? 2
                 }
                 set {
                   _storage["myValue"] = newValue
@@ -162,7 +162,7 @@ final class DictionaryStorageMacroTests: XCTestCase {
             struct Test {
               var x: [Int] = [1, 2] {
                 get {
-                  _storage["x", default: [1, 2]] as! [Int]
+                  _storage["x", default: [1, 2]] as? [Int] ?? [1, 2]
                 }
                 set {
                   _storage["x"] = newValue
@@ -243,7 +243,7 @@ final class DictionaryStorageMacroTests: XCTestCase {
             struct Test {
               var z: Int = 3 {
                 get {
-                  _storage["z", default: 3] as! Int
+                  _storage["z", default: 3] as? Int ?? 3
                 }
                 set {
                   _storage["z"] = newValue
@@ -252,7 +252,7 @@ final class DictionaryStorageMacroTests: XCTestCase {
 
               var x: Int = 1 {
                 get {
-                  _storage["x", default: 1] as! Int
+                  _storage["x", default: 1] as? Int ?? 1
                 }
                 set {
                   _storage["x"] = newValue
@@ -260,7 +260,7 @@ final class DictionaryStorageMacroTests: XCTestCase {
               }
               var y: Int = 2 {
                 get {
-                  _storage["myValue", default: 2] as! Int
+                  _storage["myValue", default: 2] as? Int ?? 2
                 }
                 set {
                   _storage["myValue"] = newValue
@@ -546,7 +546,7 @@ final class DictionaryStorageMacroTests: XCTestCase {
             public struct Test {
               public var value: Int = 1 {
                 get {
-                  _storage["value", default: 1] as! Int
+                  _storage["value", default: 1] as? Int ?? 1
                 }
                 set {
                   _storage["value"] = newValue
@@ -683,7 +683,7 @@ final class DictionaryStorageMacroTests: XCTestCase {
               }
               public var `var`: Int = 0 {
                 get {
-                  _storage["var", default: 0] as! Int
+                  _storage["var", default: 0] as? Int ?? 0
                 }
                 set {
                   _storage["var"] = newValue
