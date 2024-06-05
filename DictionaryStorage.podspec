@@ -21,7 +21,7 @@ Pod::Spec.new do |s|
 
   s.prepare_command = 'swift build -c release && cp -f .build/release/DictionaryStorageMacros ./Binary'
 
-  s.source_files  = "Sources/DictionaryStorage/DictionaryStorage.swift"
+  s.source_files  = "Sources/DictionaryStorage/*.swift"
   s.swift_versions = "5.9"
 
   s.preserve_paths = ["Binary/DictionaryStorageMacros"]
