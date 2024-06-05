@@ -23,7 +23,7 @@ final class StringRepresentationMacroTests: XCTestCase {
             """
             @StringRawRepresentation
             enum Visa {
-                case tourist
+                case tourist // test comment
                 case business
                 case student
                 case other(String)
@@ -31,7 +31,7 @@ final class StringRepresentationMacroTests: XCTestCase {
             """,
             expandedSource: """
                 enum Visa {
-                    case tourist
+                    case tourist // test comment
                     case business
                     case student
                     case other(String)
