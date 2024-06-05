@@ -60,20 +60,22 @@ extension StringRepresentationMacro: MemberMacro {
 
         let initializer = try InitializerDeclSyntax("\(modifier) init?(rawValue: String)") {
             try SwitchExprSyntax("switch rawValue") {
+                var hasDefault = false
                 for caseDecl in cases {
                     let customName = customName(for: caseDecl)
                     for element in caseDecl.elements {
 
-                        let name = customName ?? element.name
+						let name = customName ?? element.name.trimmed
 
                         if element.parameterClause == nil {
                             SwitchCaseSyntax(
                                 """
                                 case "\(name)":
-                                  self = .\(element.name)
+                                  self = .\(element.name.trimmed)
                                 """
                             )
                         } else {
+                            let _ = (hasDefault = true)
                             SwitchCaseSyntax(
                                 """
                                 default:
@@ -82,6 +84,14 @@ extension StringRepresentationMacro: MemberMacro {
                             )
                         }
                     }
+                }
+                if !hasDefault {
+                    SwitchCaseSyntax(
+                        """
+                        default:
+                          return nil
+                        """
+                    )
                 }
             }
         }
@@ -92,12 +102,12 @@ extension StringRepresentationMacro: MemberMacro {
                     let customName = customName(for: caseDecl)
                     for element in caseDecl.elements {
 
-                        let value = customName ?? element.name
+						let value = customName ?? element.name.trimmed
 
                         if element.parameterClause == nil {
                             SwitchCaseSyntax(
                                 """
-                                case .\(element.name):
+                                case .\(element.name.trimmed):
                                   return "\(value)"
                                 """
                             )
