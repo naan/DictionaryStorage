@@ -67,3 +67,8 @@ public macro StringRawRepresentation() =
 @attached(peer)
 public macro CustomName(_ name: String) =
     #externalMacro(module: "DictionaryStorageMacros", type: "CustomNameMacro")
+
+/// Customize prefix of the key for @StringRawRepresentation.
+@attached(peer)
+public macro CustomPrefix(_ name: String) =
+    #externalMacro(module: "DictionaryStorageMacros", type: "CustomPrefixMacro")
