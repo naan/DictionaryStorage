@@ -55,8 +55,7 @@ extension VariableDeclSyntax {
     var getNameAndType: (name: String, type: String)? {
         guard let patternBinding = bindings.first?.as(PatternBindingSyntax.self) else { return nil }
         guard let name = patternBinding.pattern.as(IdentifierPatternSyntax.self)?.identifier,
-            let type = patternBinding.typeAnnotation?.as(TypeAnnotationSyntax.self)?.type.as(IdentifierTypeSyntax.self)?.name
-        else {
+              let type = patternBinding.typeAnnotation?.as(TypeAnnotationSyntax.self)?.type.as(IdentifierTypeSyntax.self)?.name else {
             return nil
         }
         return (name: name.text, type: type.text)
@@ -68,7 +67,7 @@ extension DeclGroupSyntax {
     func storedProperties() -> [VariableDeclSyntax] {
         memberBlock.members.compactMap { member in
             guard let variable = member.decl.as(VariableDeclSyntax.self),
-                variable.isStoredProperty
+                    variable.isStoredProperty
             else {
                 return nil
             }
@@ -103,8 +102,7 @@ extension AttributeListSyntax {
         if let element = self.getAttributedElement(macroName),
             let expr = element.getExprSyntax(),
             let name = expr.as(StringLiteralExprSyntax.self)?.segments.first,
-            let content = name.as(StringSegmentSyntax.self)?.content
-        {
+            let content = name.as(StringSegmentSyntax.self)?.content {
             return content
         }
         return nil

@@ -216,7 +216,7 @@ final class StringRepresentationMacroTests: XCTestCase {
             indentationWidth: .spaces(2)
         )
     }
-    
+
     func testDefault() {
         assertMacroExpansion(
             """
@@ -228,14 +228,14 @@ final class StringRepresentationMacroTests: XCTestCase {
             expandedSource: """
                 public enum Visa {
                   case hello
-                
+
                   public var rawValue: String {
                     switch self {
                     case .hello:
                       return "hello"
                     }
                   }
-                
+
                   public init?(rawValue: String) {
                     switch rawValue {
                     case "hello":
@@ -245,10 +245,10 @@ final class StringRepresentationMacroTests: XCTestCase {
                     }
                   }
                 }
-                
+
                 extension Visa: RawRepresentable {
                 }
-                
+
                 extension Visa: Equatable {
                 }
                 """,

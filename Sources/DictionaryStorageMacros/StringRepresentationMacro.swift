@@ -102,7 +102,7 @@ extension StringRepresentationMacro: MemberMacro {
                     let customName = customName(for: caseDecl)
                     for element in caseDecl.elements {
 
-						let value = customName ?? element.name.trimmed
+                        let value = customName ?? element.name.trimmed
 
                         if element.parameterClause == nil {
                             SwitchCaseSyntax(
@@ -142,8 +142,7 @@ extension StringRepresentationMacro {
             if let inheritedTypes = enumDeclaration.inheritanceClause?.inheritedTypes,
                 inheritedTypes.contains(where: { inherited in
                     inherited.type.trimmedDescription == "RawRepresentable" || inherited.type.trimmedDescription == "Equatable"
-                })
-            {
+                }) {
                 return false
             }
         } else {

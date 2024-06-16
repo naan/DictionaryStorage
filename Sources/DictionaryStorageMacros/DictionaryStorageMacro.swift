@@ -95,8 +95,7 @@ extension DictionaryStorageMacro: ExtensionMacro {
             }
 
         if let inheritedTypes = inheritanceClause?.inheritedTypes,
-            inheritedTypes.contains(where: { inherited in inherited.type.trimmedDescription == "DictionaryRepresentable" })
-        {
+            inheritedTypes.contains(where: { inherited in inherited.type.trimmedDescription == "DictionaryRepresentable" }) {
             return []
         }
 
@@ -203,8 +202,7 @@ public struct DictionaryStoragePropertyMacro: AccessorMacro {
         // Update dictionary key if specified
         if let argument = node.arguments?.as(LabeledExprListSyntax.self)?.first?
             .expression.as(StringLiteralExprSyntax.self)?.segments.first?
-            .as(StringSegmentSyntax.self)?.content
-        {
+            .as(StringSegmentSyntax.self)?.content {
             dictionaryKey = argument
         }
 
