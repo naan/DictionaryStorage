@@ -1,4 +1,5 @@
 [![Build](https://github.com/naan/DictionaryStorage/actions/workflows/swift.yml/badge.svg)](https://github.com/naan/DictionaryStorage/actions/workflows/swift.yml)
+
 # @DictionaryStorage
 
 A Swift Macro expands the stored properties of a type into computed properties that access to a storage dictionary. Inspired by WWDC 2023 Video [Expand on Swift macros](https://developer.apple.com/videos/play/wwdc2023/10167?time=748), [the sample code](https://github.com/apple/swift-syntax/blob/main/Examples/Sources/MacroExamples/Implementation/ComplexMacros/DictionaryIndirectionMacro.swift) of [swift-syntax](https://github.com/apple/swift-syntax) and Nikita Ermolenk's [Automating RawRepresentable Conformance with Swift Macros](https://otbivnoe.ru/2023/06/13/Automating-RawRepresentable-Conformance-with-Swift-Macros.html).
@@ -11,8 +12,8 @@ Suppose you have the following JSON object in version 1 of your app:
 
 ```json
 {
-    "name" : "John Doe",
-    "age" : 30
+	"name": "John Doe",
+	"age": 30
 }
 ```
 
@@ -26,11 +27,12 @@ struct Person: Codable {
 ```
 
 It works great. Then later in version 2, you add a new field:
+
 ```json
 {
-    "name" : "John Doe",
-    "age" : 30,
-    "gender" : "male"
+	"name": "John Doe",
+	"age": 30,
+	"gender": "male"
 }
 ```
 
@@ -59,7 +61,7 @@ struct Person: Codable {
     }
 }
 
-let json = 
+let json =
 """
 {
     "name" : "John Doe",
@@ -69,7 +71,7 @@ let json =
 """.data(using: .utf8)!
 
 // On an older version of the app
-let person = try JSONDecoder(Person.self, json) 
+let person = try JSONDecoder(Person.self, json)
 // DecodingError: Cannot initialize `Gender` from invalid String value "trans"
 ```
 
@@ -150,138 +152,155 @@ struct Person {
 
 The macro expands the code for you like the example above.
 
-
 ## Quick Start
 
 To use `@DictionaryStorage`:
 
 1. **Installation**
 
-   In Xcode, add DictionaryStorage with: `File` → `Add Package Dependencies…` and input the package URL:
+    In Xcode, add DictionaryStorage with: `File` → `Add Package Dependencies…` and input the package URL:
 
-   > `https://github.com/naan/DictionaryStorage`
+    > `https://github.com/naan/DictionaryStorage`
 
-   Or, for SPM-based projects, add it to your package dependencies:
+    Or, for SPM-based projects, add it to your package dependencies:
 
-   ```swift
-   dependencies: [
-     .package(url: "https://github.com/naan/DictionaryStorage", from: "1.0.0")
-   ]
-   ```
+    ```swift
+    dependencies: [
+      .package(url: "https://github.com/naan/DictionaryStorage", from: "1.0.0")
+    ]
+    ```
 
-   And then add the product to all targets that use DictionaryStorage:
+    And then add the product to all targets that use DictionaryStorage:
 
-   ```swift
-   .product(name: "DictionaryStorage", package: "DictionaryStorage"),
-   ```
+    ```swift
+    .product(name: "DictionaryStorage", package: "DictionaryStorage"),
+    ```
 
 2. **Import & basic usage**
    <br/> After importing DictionaryStorage, add `@DictionaryStorage` before your struct/class definition. The macro expands non-private stored properties into computed properties as well as adds an initializer and a read-only accessor to the backed dictionary.
 
-   ```swift
-   import DictionaryStorage
+    ```swift
+    import DictionaryStorage
 
-   @DictionaryStorage
-   struct Person: Identifiable {
-     let name: String = ""
-     var age: Int?
-     private let _id = UUID()
-     var id: UUID { _ id }
-   }
-   ```
+    @DictionaryStorage
+    struct Person: Identifiable {
+      let name: String = ""
+      var age: Int?
+      private let _id = UUID()
+      var id: UUID { _ id }
+    }
+    ```
 
-   The macro expands the code to:
+    The macro expands the code to:
 
-   ```swift
-   struct Person: Identifiable {
-     let name: String = "" {
-        get {
-            _storage["name"] as? String ?? ""
-        }
-        set {
-            _storage["name"] = newValue
-        }
-     }
-     var age: Int? {
-        get {
-            _stoarge["age"] as? Int
-        }
-        set {
-            if newValue {
-                _storage["age"] = newValue
-            }
-        }
-     }
+    ```swift
+    struct Person: Identifiable {
+      let name: String = "" {
+         get {
+             _storage["name"] as? String ?? ""
+         }
+         set {
+             _storage["name"] = newValue
+         }
+      }
+      var age: Int? {
+         get {
+             _stoarge["age"] as? Int
+         }
+         set {
+             if newValue {
+                 _storage["age"] = newValue
+             }
+         }
+      }
 
-     // DictionaryStorage does not expand private, nor computed properties.
-     private let _id = UUID() 
-     var id: UUID { _id  }
+      // DictionaryStorage does not expand private, nor computed properties.
+      private let _id = UUID()
+      var id: UUID { _id  }
 
-     private var _storage: [String: Any]
+      private var _storage: [String: Any]
 
-     init(_ dictionary: [String: Any]) {
-        _storage = dictionary
-     }
+      init(_ dictionary: [String: Any]) {
+         _storage = dictionary
+      }
 
-     var rawDictionary: [String: Any] {
-        _storage
-     }
+      var rawDictionary: [String: Any] {
+         _storage
+      }
 
-   }
+    }
 
-   extension Person: DictionaryRepresentable {}
-   ```
+    extension Person: DictionaryRepresentable {}
+    ```
 
-   Using `@DictionaryStorage` type:
+    Using `@DictionaryStorage` type:
 
-   ```swift
-   let data = 
-        """
-        {
-            "name": "John Doe",
-            "age": 30,
-            "gender": "male"
-        },
-        """.data(using: .utf8)!
+    ```swift
+    let data =
+         """
+         {
+             "name": "John Doe",
+             "age": 30,
+             "gender": "male"
+         },
+         """.data(using: .utf8)!
 
-    let json = try JSONSerialization.jsonObject(with: data) as? [String: Any]
+     let json = try JSONSerialization.jsonObject(with: data) as? [String: Any]
 
-    var person = Person(json!)
-    print(person.name)     // "John Doe"
-    print(person.age)      // 30
+     var person = Person(json!)
+     print(person.name)     // "John Doe"
+     print(person.age)      // 30
 
-    person.age += 1
+     person.age += 1
 
-    print(person.rawDictionary)
-    // Preserve unknown fields such as `gender`
-    // ["name": "John Doe", "age": 31, "gender": "male"]
-   ```
-   
+     print(person.rawDictionary)
+     // Preserve unknown fields such as `gender`
+     // ["name": "John Doe", "age": 31, "gender": "male"]
+    ```
+
     You can specify a different key name than the property name by using `@DictionaryStorageProperty`:
 
-   ```swift
-   @DictionaryStorage
-   struct Person {
-     @DictionaryStorageProperty("person_name")
-     var name: String = ""
-   }
-   ```
+    ```swift
+    @DictionaryStorage
+    struct Person {
+      @DictionaryStorageProperty("person_name")
+      var name: String = ""
+    }
+    ```
 
-   The macro expands the code to: 
+    The macro expands the code to:
 
-   ```swift
-   struct Person {
-     var name: String = "" {
+    ```swift
+    struct Person {
+      var name: String = "" {
         get {
             _storage["person_name"] as? String ?? ""
         }
         set {
             _storage["person_name"] = newValue
         }
-     }
-     ...
-   }
-   ```
+      }
+      ...
+    }
+    ```
+
+    If you need a custom initializer, say you need to do data migration, you can write your own initializer and DictionaryStorage won't generate the function. Don't forget to set `_storage`!
+
+    ```swift
+    @DictionaryStorage
+    struct Person {
+      var firstName: String = ""
+      var lastName: String = ""
+
+      init(_ dictionary: [String: Any]) {
+        self._storage = dictionary
+        // Migrating from old version...
+        if let name = dictionary["name"] {
+            firstName = name
+        }
+      }
+    }
+    ```
 
 ## Reference
 
@@ -291,71 +310,72 @@ This package includes the following macros:
 
 Attach to a type you want to be `DictionaryRepresentable`.
 
-* `@DictionaryStorage`
-  <br/> Expand non-private stored properties to computed properties. Also add an initializer with `[String: Any]` as well as a read-only property to access the dictionary.
+-   `@DictionaryStorage`
+    <br/> Expand non-private stored properties to computed properties. Also add an initializer with `[String: Any]` as well as a read-only property to access the dictionary.
 
-* `@DictionaryStorage(.equatable)`
-  <br/>  Enables the attached type to conform to `Equatable`. Note, that the `==`` method only compares the known properties and does not compare private properties nor already computed properties before the macro applied.
+-   `@DictionaryStorage(.equatable)`
+    <br/> Enables the attached type to conform to `Equatable`. Note, that the `==`` method only compares the known properties and does not compare private properties nor already computed properties before the macro applied.
 
-  ```swift
-  @DictionaryStorage(.equatable)
-  struct Person {
-    let name: String = ""
-    var age: Int?
-  }
-  ```
-
-  The macro expands to:
-  ```swift
-  struct Person {
-    let name: String = "" {
-       ...
+    ```swift
+    @DictionaryStorage(.equatable)
+    struct Person {
+      let name: String = ""
+      var age: Int?
     }
-    var age: Int? {
-       ...
+    ```
+
+    The macro expands to:
+
+    ```swift
+    struct Person {
+      let name: String = "" {
+         ...
+      }
+      var age: Int? {
+         ...
+      }
+      ...
+
+      static func == (lhs: Person, rhs: Person) -> Bool {
+        lhs.name == rhs.name &&
+        lhs.age == rhs.age
+      }
     }
+
     ...
 
-    static func == (lhs: Person, rhs: Person) -> Bool {
-      lhs.name == rhs.name &&
-      lhs.age == rhs.age
-    }
-  }
+    extension Person: Equatable {}
+    ```
 
-  ...
-
-  extension Person: Equatable {}
-  ```
-
-
-* `@DictionaryStorage(.hashable)`
-  <br /> Enables the attached type to conform to `Hashable`.
+-   `@DictionaryStorage(.hashable)`
+    <br /> Enables the attached type to conform to `Hashable`.
 
 ### `@DictionaryStorageProperty(_ key: String)`
 
 Use this macro on property declarations of a type that is annotated with `@DictionaryStorage`.
 
-* `@DictionaryStorageProperty("custom_name")`
-  <br /> Specifies "custom_name" as the key for the dictionary.
+-   `@DictionaryStorageProperty("custom_name")`
+    <br /> Specifies "custom_name" as the key for the dictionary.
 
 ### `@StringRawRepresentation`
 
 Applying this macro to an enum ensures it can be represented as a raw string. This is particularly useful in conjunction with `@DictionaryStorage`.
 
-* `@StringRawRepresentation`
-  <br> Make the attached enum to be a string raw representable.
-  ```swift
-  @StringRawRepresentation
-  public enum InputType {
-      case text
-      case email
-      case password
-      @CustomName("select-one") case option
-      case unknown(String)
-  }
-  ```
+-   `@StringRawRepresentation`
+    <br> Make the attached enum to be a string raw representable.
 
-  The macro expands to:
+    ```swift
+    @StringRawRepresentation
+    public enum InputType {
+        case text
+        case email
+        case password
+        @CustomName("select-one") case option
+        case unknown(String)
+    }
+    ```
+
+    The macro expands to:
 
     ```swift
     public enum InputType {
@@ -389,7 +409,7 @@ Applying this macro to an enum ensures it can be represented as a raw string. Th
             default:
             self = .unknown(rawValue)
             }
-        }    
+        }
     }
 
     extension InputType: RawRepresentable {
@@ -403,8 +423,8 @@ Applying this macro to an enum ensures it can be represented as a raw string. Th
 
 Use this macro to set a custom name for an enum that is annotated with `@StringRawRepresentation`.
 
-* `@CustomName("custom_name")`
-  <br /> Specifies `"custom_name"` as a raw value of the enum case this macro is attached to.
+-   `@CustomName("custom_name")`
+    <br /> Specifies `"custom_name"` as a raw value of the enum case this macro is attached to.
 
 ## Advanced Topics
 
@@ -458,7 +478,7 @@ struct Person {
         set {
             _storage["id"] = DictionaryStorage.encode(newValue)
         }
-    } 
+    }
     var name: String = "" { ... }
     var age: Int? { ... }
 }
@@ -515,7 +535,7 @@ struct Usage: DictionaryRepresentable {
 
     var _storage: [String: Any]
 
-    // MARK: - DictionaryRepresentable 
+    // MARK: - DictionaryRepresentable
 
     var rawDictionary: [String: Any] {
         _storage
@@ -582,7 +602,6 @@ let data =
     }
 ```
 
-
 ### Utilizing `@DictionaryStorage` with `@MemberwiseInit`
 
 If you want your type to be capable of both reading from a dictionary and constructing one, use `@DictionaryStorage` with [`@MemberwiseInit`](https://github.com/gohanlon/swift-memberwise-init-macro) macro.
@@ -635,5 +654,3 @@ let dict = person.rawDictionary // ["name": "John Doe"]
 ## License
 
 `@DictionaryStorage` is available under the MIT license. See the [LICENSE](LICENSE) file for more info.
-
- 
