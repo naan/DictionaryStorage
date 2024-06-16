@@ -1,7 +1,7 @@
 Pod::Spec.new do |s|
 
   s.name         = "DictionaryStorage"
-  s.version      = "0.1.0"
+  s.version      = "1.2"
   s.summary      = "A Swift Macro expands the stored properties of a type into computed properties that access a storage dictionary."
 
   s.description  = <<-DESC

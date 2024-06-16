@@ -9,6 +9,7 @@ struct DictionaryStorageMacroPlugin: CompilerPlugin {
         DictionaryStorageMacro.self,
         DictionaryStoragePropertyMacro.self,
         StringRepresentationMacro.self,
-        CustomNameMacro.self
+        CustomNameMacro.self,
+		CustomPrefixMacro.self,
     ]
 }

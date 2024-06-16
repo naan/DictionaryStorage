@@ -15,7 +15,8 @@ final class StringRepresentationMacroTests: XCTestCase {
 
     private let macros: [String: Macro.Type] = [
         "StringRawRepresentation": StringRepresentationMacro.self,
-        "CustomName": CustomNameMacro.self
+        "CustomName": CustomNameMacro.self,
+		"CustomPrefix": CustomPrefixMacro.self,
     ]
 
     func testStringRawRepresentation() throws {
@@ -304,6 +305,65 @@ final class StringRepresentationMacroTests: XCTestCase {
             indentationWidth: .spaces(2)
         )
     }
-
+    
+    func testCustomPrefix() {
+        assertMacroExpansion(
+            """
+            @StringRawRepresentation
+            public enum Visa {
+              case hello, world
+              @CustomPrefix("testPrefix") case testPrefix(String)
+              @CustomPrefix("p_") case testPrefix2(String)
+              case custom(String)
+            }
+            """,
+            expandedSource: """
+                public enum Visa {
+                  case hello, world
+                  case testPrefix(String)
+                  case testPrefix2(String)
+                  case custom(String)
+                
+                  public var rawValue: String {
+                    switch self {
+                    case .hello:
+                      return "hello"
+                    case .world:
+                      return "world"
+                    case .testPrefix(let value):
+                      return "testPrefix" + value
+                    case .testPrefix2(let value):
+                      return "p_" + value
+                    case .custom(let value):
+                      return value
+                    }
+                  }
+                
+                  public init?(rawValue: String) {
+                    switch rawValue {
+                    case "hello":
+                      self = .hello
+                    case "world":
+                      self = .world
+                    case let name where name.hasPrefix("testPrefix"):
+                      self = .testPrefix(String(name.suffix(from: name.index(name.startIndex, offsetBy: "testPrefix".count))))
+                    case let name where name.hasPrefix("p_"):
+                      self = .testPrefix2(String(name.suffix(from: name.index(name.startIndex, offsetBy: "p_".count))))
+                    default:
+                      self = .custom(rawValue)
+                    }
+                  }
+                }
+                
+                extension Visa: RawRepresentable {
+                }
+                
+                extension Visa: Equatable {
+                }
+                """,
+            macros: macros,
+            indentationWidth: .spaces(2)
+        )
+    }
 }
 // swiftlint:enable function_body_length

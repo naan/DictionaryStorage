@@ -63,6 +63,7 @@ extension StringRepresentationMacro: MemberMacro {
                 var hasDefault = false
                 for caseDecl in cases {
                     let customName = customName(for: caseDecl)
+					let customPrefix = customPrefix(for: caseDecl)
                     for element in caseDecl.elements {
 
 						let name = customName ?? element.name.trimmed
@@ -74,12 +75,19 @@ extension StringRepresentationMacro: MemberMacro {
                                   self = .\(element.name.trimmed)
                                 """
                             )
+                        } else if let customPrefix {
+                            SwitchCaseSyntax(
+                                """
+                                case let name where name.hasPrefix("\(customPrefix)"):
+                                  self = .\(name)(String(name.suffix(from: name.index(name.startIndex, offsetBy: "\(customPrefix)".count))))
+                                """
+                            )
                         } else {
-                            let _ = (hasDefault = true)
+							let _ = (hasDefault = true)
                             SwitchCaseSyntax(
                                 """
                                 default:
-                                  self = .\(element.name)(rawValue)
+                                  self = .\(name)(rawValue)
                                 """
                             )
                         }
@@ -100,6 +108,7 @@ extension StringRepresentationMacro: MemberMacro {
             try SwitchExprSyntax("switch self") {
                 for caseDecl in cases {
                     let customName = customName(for: caseDecl)
+                    let customPrefix = customPrefix(for: caseDecl)
                     for element in caseDecl.elements {
 
                         let value = customName ?? element.name.trimmed
@@ -111,10 +120,17 @@ extension StringRepresentationMacro: MemberMacro {
                                   return "\(value)"
                                 """
                             )
+                        } else if let customPrefix {
+                            SwitchCaseSyntax(
+                                """
+                                case .\(element.name.trimmed)(let value):
+                                  return "\(customPrefix)" + value
+                                """
+                            )
                         } else {
                             SwitchCaseSyntax(
                                 """
-                                case .\(element.name)(let value):
+                                case .\(element.name.trimmed)(let value):
                                   return value
                                 """
                             )
@@ -135,6 +151,10 @@ extension StringRepresentationMacro {
 
     private static func customName(for caseDecl: EnumCaseDeclSyntax) -> TokenSyntax? {
         return caseDecl.attributes.getAttributeElementParameter("CustomName")
+    }
+
+    private static func customPrefix(for caseDecl: EnumCaseDeclSyntax) -> TokenSyntax? {
+        return caseDecl.attributes.getAttributeElementParameter("CustomPrefix")
     }
 
     private static func errorCheck(declaration: some DeclGroupSyntax) throws -> Bool {
