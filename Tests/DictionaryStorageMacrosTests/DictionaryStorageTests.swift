@@ -705,6 +705,91 @@ final class DictionaryStorageMacroTests: XCTestCase {
             }
             """
         }
+    }
+
+    func testSkipInitializer() {
+        assertMacro {
+            """
+            @DictionaryStorage
+            struct Test {
+              init(_ dictionary: [String: Any]) {
+                self._storage = dictionary
+                // Custom initializer
+              }
+            }
+            """
+        } diagnostics: {
+            """
+
+            """
+        }expansion: {
+            """
+            struct Test {
+              init(_ dictionary: [String: Any]) {
+                self._storage = dictionary
+                // Custom initializer
+              }
+
+              private var _storage: [String: Any] = [:]
+
+              var rawDictionary: [String: Any] {
+                _storage
+              }
+            }
+
+            extension Test: DictionaryRepresentable {
+            }
+            """
+        }
+
+    }
+
+    func testInitializer() {
+        assertMacro {
+            """
+            @DictionaryStorage
+            struct Test {
+              init(dictionary: [String: Any]) {
+                self._storage = dictionary
+                // Custom initializer
+              }
+
+              init(_ value: String) {
+                // Custom initializer
+              }
+            }
+            """
+        } diagnostics: {
+            """
+
+            """
+        }expansion: {
+            """
+            struct Test {
+              init(dictionary: [String: Any]) {
+                self._storage = dictionary
+                // Custom initializer
+              }
+
+              init(_ value: String) {
+                // Custom initializer
+              }
+
+              init(_ dictionary: [String: Any]) {
+                self._storage = dictionary
+              }
+
+              private var _storage: [String: Any] = [:]
+
+              var rawDictionary: [String: Any] {
+                _storage
+              }
+            }
+
+            extension Test: DictionaryRepresentable {
+            }
+            """
+        }
 
     }
 }

@@ -43,6 +43,18 @@ struct Test {
     var stringValue: String = "string"
 }
 
+@DictionaryStorage
+struct Test2 {
+    var value: Int = 1
+
+    init(_ dictionary: [String: Any]) {
+        self._storage = dictionary
+        if let val = dictionary["oldValue"] as? Int {
+            self.value = val
+        }
+    }
+}
+
 final class DictionaryMacroTests: XCTestCase {
 
     func testMacro() throws {

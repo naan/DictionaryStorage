@@ -36,12 +36,14 @@ extension DictionaryStorageMacro: MemberMacro {
             "hasher.combine(\($0))"
         }
 
-        let variables: [DeclSyntax] = [
+        let initializer: DeclSyntax =
             """
             \(modifier) init(_ dictionary: [String: Any]) {
             self._storage = dictionary
             }
-            """,
+            """
+
+        let variables: [DeclSyntax] = [
             """
             private var _storage: [String: Any] = [:]
             """,
@@ -51,6 +53,24 @@ extension DictionaryStorageMacro: MemberMacro {
             }
             """
         ]
+
+        var hasInitializer = false
+
+        for member in declaration.memberBlock.members {
+            if let initializer = member.decl.as(InitializerDeclSyntax.self) {
+                let parameters = initializer.signature.parameterClause.parameters
+                if let parameter = parameters.first,
+                   parameters.count == 1,
+                   parameter.firstName.tokenKind == .wildcard,
+                   let dict = parameter.type.as(DictionaryTypeSyntax.self) {
+                    if dict.key.identifierName == "String" && dict.value.identifierName == "Any" {
+                        hasInitializer = true
+                    }
+                }
+            }
+        }
+
+        let members = hasInitializer ? variables : [initializer] + variables
 
         let hashable: DeclSyntax =
             """
@@ -68,11 +88,11 @@ extension DictionaryStorageMacro: MemberMacro {
 
         switch option {
         case "equatable":
-            return variables + [equatable]
+            return members + [equatable]
         case "hashable":
-            return variables + [equatable, hashable]
+            return members + [equatable, hashable]
         default:
-            return variables
+            return members
         }
     }
 }
